@@ -1,0 +1,12 @@
+[Unit]
+Description=Darkice Service
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/willjasen/darkice.sh
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=multi-user.target
