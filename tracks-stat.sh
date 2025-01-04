@@ -8,7 +8,7 @@ apt-get install darkice -y;
 apt-get install icecast2 -y;
 
 # Make darkice a service
-chmod +x chmod /home/willjasen/darkice.sh
+chmod +x /home/willjasen/darkice.sh;
 cp darkice.service /etc/systemd/system/darkice.service;
 systemctl daemon-reload;
 systemctl enable darkice.service;
