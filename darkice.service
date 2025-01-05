@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/darkice -c /home/willjasen/darkice.cfg
+ExecStart=/usr/bin/darkice -c /opt/tracks-stat/darkice.cfg
 Restart=on-failure
 RestartSec=20s
 User=willjasen
