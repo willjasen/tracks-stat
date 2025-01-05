@@ -56,6 +56,10 @@ if [ "$(readlink /etc/cloudflared/config.yml)" != "/opt/tracks-stat/cloudflare-c
     ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml || error_exit "Failed to create config symlink";
 fi
 # Change the config file
+# Verify VAR1 is set
+if [ -z "${VAR1}" ]; then
+    error_exit "VAR1 is not set. Please set the tunnel ID variable.";
+fi
 sed -i "s/your_actual_tunnel_id/$VAR1/" /opt/tracks-stat/cloudflare-config.yml;
 
 # Reload systemd, enable and start the cloudflared service
