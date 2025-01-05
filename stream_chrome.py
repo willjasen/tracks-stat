@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 import json
 import time
+import threading
 
 def get_cf_cache_status(driver):
     logs = driver.get_log('performance')
@@ -18,13 +19,13 @@ def get_cf_cache_status(driver):
                     url = response.get('url')
                     print(f"URL: {url}\nCF-Cache-Status: {cf_cache_status}\n")
                 else:
-                    nothingvar = "null"
+                    nothingvar = "true"
             else:
-                nothingvar2 = "nothing"
+                nothingvar2 = "true"
         except Exception as e:
             print(f"Error parsing log entry: {e}")
 
-def launch_chrome_stream_with_logging(stream_url, duration, driver_path):
+def launch_chrome_stream_with_logging(stream_url, duration, instance_num, driver_path):
     # Configure Chrome options
     chrome_options = Options()
     chrome_options.add_argument("--mute-audio")  # Mute audio to prevent overlapping sounds
@@ -43,7 +44,7 @@ def launch_chrome_stream_with_logging(stream_url, duration, driver_path):
     try:
         # Navigate to the stream URL
         driver.get(stream_url)
-        print(f"Started streaming in Chrome instance PID: {driver.service.process.pid}\n")
+        print(f"Started streaming in Chrome instance: {instance_num}")
         
         # Wait for a short period to allow network events to be captured
         time.sleep(5)  # Adjust based on your needs
@@ -61,18 +62,27 @@ def launch_chrome_stream_with_logging(stream_url, duration, driver_path):
     finally:
         # Close the browser
         driver.quit()
-        print(f"Closed Chrome instance PID: {driver.service.process.pid}")
+        print(f"Closed Chrome instance: {instance_num}")
 
 def main():
-    stream_url = "https://stream.stretchie.delivery/"
-    duration = 1  # Duration in seconds
+    stream_url = "http://rp.risk-mermaid.ts.net:8000/"
     driver_path = "/opt/homebrew/bin/chromedriver"  # Update this path if different
-    
-    num_instances = 1  # Number of Chrome instances to launch
+    num_instances = 15  # Number of Chrome instances to launch
+    duration = 10  # Duration in seconds
+    threads = []
+
+    print(f"Preparing to launch Chrome: {num_instances} instances")
     for i in range(num_instances):
-        print(f"Launching Chrome instance {i+1}/{num_instances}")
-        launch_chrome_stream_with_logging(stream_url, duration, driver_path)
-        time.sleep(1)  # Slight delay to prevent overwhelming the system
+        thread = threading.Thread(target=launch_chrome_stream_with_logging, args=(stream_url, duration, i, driver_path))
+        threads.append(thread)
+    
+    # Start all threads
+    for thread in threads:
+        thread.start()
+    
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
 
     print("All Chrome instances have completed streaming.")
 
