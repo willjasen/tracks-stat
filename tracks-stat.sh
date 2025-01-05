@@ -21,7 +21,7 @@ fi
 error_exit() {
     echo "$1" 1>&2
     exit 1
-}
+};
 
 # configure the USB audio device
 configure_usb_audio_device () {
