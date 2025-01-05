@@ -46,8 +46,16 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
+# Check if config.yml symlink already points to our config
+if [ "$(readlink /etc/cloudflared/config.yml)" != "/opt/tracks-stat/cloudflare-config.yml" ]; then
+    # Remove existing config if present
+    if [ -f /etc/cloudflared/config.yml ]; then
+        rm /etc/cloudflared/config.yml || error_exit "Failed to remove existing config";
+    fi
+    # Create symlink
+    ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml || error_exit "Failed to create config symlink";
+fi
 # Change the config file
-ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml || error_exit "Failed to create config symlink";
 sed -i "s/your_actual_tunnel_id/$VAR1/" /opt/tracks-stat/cloudflare-config.yml;
 
 # Reload systemd, enable and start the cloudflared service
