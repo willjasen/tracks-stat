@@ -28,9 +28,6 @@ mkdir -p /etc/cloudflared || error_exit "Failed to create cloudflared configurat
 # Verify VAR1 is set
 if [ -z "${VAR1}" ]; then
     error_exit "VAR1 is not set. Please set the tunnel ID variable.";
-else
-    # Debug tunnel ID configuration
-    echo "Current tunnel ID: ${VAR1}"
 fi
 
 # Clear out the service and redo it
