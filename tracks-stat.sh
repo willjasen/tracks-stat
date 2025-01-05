@@ -45,11 +45,10 @@ configure_usb_audio_device () {
 configure_usb_audio_device;
 
 # Make darkice a service
-chmod +x /home/willjasen/darkice.sh;
 cp darkice.service /etc/systemd/system/darkice.service;
 systemctl daemon-reload;
 systemctl enable darkice.service;
 
 # Start darkice and icecast2
-systemctl start darkice.service;
-systemctl start icecast2.service;
+systemctl restart darkice.service;
+systemctl restart icecast2.service;

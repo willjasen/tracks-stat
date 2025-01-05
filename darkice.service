@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /home/willjasen/darkice.sh
+ExecStart=/usr/bin/darkice -c /home/willjasen/darkice.cfg
 Restart=on-failure
 RestartSec=20s
 User=willjasen
