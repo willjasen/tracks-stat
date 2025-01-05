@@ -60,7 +60,7 @@ fi
 if [ -z "${VAR1}" ]; then
     error_exit "VAR1 is not set. Please set the tunnel ID variable.";
 fi
-sed -i "s/your_actual_tunnel_id/$VAR1/" /opt/tracks-stat/cloudflare-config.yml;
+sed -i "s/your_actual_tunnel_id/${VAR1}/" /opt/tracks-stat/cloudflare-config.yml;
 
 # Reload systemd, enable and start the cloudflared service
 systemctl daemon-reload || error_exit "Failed to reload systemd daemon"
