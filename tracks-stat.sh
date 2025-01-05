@@ -61,11 +61,11 @@ systemctl restart darkice.service;
 systemctl restart icecast2.service;
 
 # Setup Cloudflare proxy
-bash /opt/tracks-stat/setup-cloudflared.sh
+source /opt/tracks-stat/setup-cloudflared.sh;
 
 # Configure cloudflared
-TUNNEL_ID=${VAR1}
-sed -i "s/<YOUR_TUNNEL_ID>/$TUNNEL_ID/g" /opt/tracks-stat/cloudflare-config.yml
+TUNNEL_ID=${VAR1};
+sed -i "s/<YOUR_TUNNEL_ID>/$TUNNEL_ID/g" /opt/tracks-stat/cloudflare-config.yml;
 
 # Remove existing config.yml if it exists and create a symlink
 if [ -f /etc/cloudflared/config.yml ]; then
