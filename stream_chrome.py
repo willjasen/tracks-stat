@@ -5,36 +5,42 @@ import json
 import time
 import threading
 
-def get_cf_cache_status(driver):
-    logs = driver.get_log('performance')
-    for entry in logs:
+def monitor_network_traffic(driver):
+    total_bytes = 0
+    received_responses = []
+    
+    def response_received(message):
+        nonlocal total_bytes
         try:
-            log = json.loads(entry['message'])['message']
-            if log['method'] == 'Network.responseReceived':
-                response = log['params']['response']
-                headers = response.get('headers', {})
-                # Use case-insensitive header lookup
-                cf_cache_status = headers.get('cf-cache-status') or headers.get('CF-Cache-Status')
-                if cf_cache_status:
-                    url = response.get('url')
-                    print(f"URL: {url}\nCF-Cache-Status: {cf_cache_status}\n")
-                else:
-                    nothingvar = "true"
-            else:
-                nothingvar2 = "true"
+            message_dict = json.loads(message)
+            if message_dict['method'] == 'Network.responseReceived':
+                received_responses.append(message_dict['params']['requestId'])
+            elif message_dict['method'] == 'Network.loadingFinished':
+                request_id = message_dict['params']['requestId']
+                if request_id in received_responses:
+                    encoded_length = message_dict['params'].get('encodedDataLength', 0)
+                    total_bytes += encoded_length
+                    print(f"Received {encoded_length} bytes for request {request_id}")
         except Exception as e:
-            print(f"Error parsing log entry: {e}")
+            print(f"Error processing network event: {e}")
+        return total_bytes
+
+    # Enable network tracking
+    driver.execute_cdp_cmd('Network.enable', {})
+    
+    # Add event listener
+    driver.add_cdp_listener('Network.responseReceived', response_received)
+    driver.add_cdp_listener('Network.loadingFinished', response_received)
+    
+    return total_bytes
 
 def launch_chrome_stream_with_logging(stream_url, duration, instance_num, driver_path):
     # Configure Chrome options
     chrome_options = Options()
-    chrome_options.add_argument("--mute-audio")  # Mute audio to prevent overlapping sounds
+    chrome_options.add_argument("--mute-audio")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    # Uncomment the next line to run Chrome in headless mode
     chrome_options.add_argument("--headless")
-    
-    # Enable performance logging
     chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
     
     # Initialize the WebDriver
@@ -42,33 +48,30 @@ def launch_chrome_stream_with_logging(stream_url, duration, instance_num, driver
     driver = webdriver.Chrome(service=service, options=chrome_options)
     
     try:
-        # Navigate to the stream URL
+        # Enable CDP Network domain
+        driver.execute_cdp_cmd('Network.enable', {})
+        
+        # Start monitoring before navigating
+        total_bandwidth = monitor_network_traffic(driver)
+        
+        print(f"Starting stream in Chrome instance: {instance_num}")
         driver.get(stream_url)
-        print(f"Started streaming in Chrome instance: {instance_num}")
         
-        # Wait for a short period to allow network events to be captured
-        time.sleep(5)  # Adjust based on your needs
-        
-        # Retrieve and parse CF-Cache-Status headers
-        get_cf_cache_status(driver)
-        
-        # Continue streaming for the remaining duration
-        remaining_time = duration - 5  # Adjust based on the initial sleep
-        if remaining_time > 0:
-            time.sleep(remaining_time)
+        # Stream for the specified duration
+        time.sleep(duration)
         
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in instance {instance_num}: {e}")
     finally:
-        # Close the browser
+        driver.execute_cdp_cmd('Network.disable', {})
         driver.quit()
-        print(f"Closed Chrome instance: {instance_num}")
+        print(f"Closed Chrome instance: {instance_num}, Total Bandwidth Used: {total_bandwidth} bytes")
 
 def main():
     stream_url = "http://rp.risk-mermaid.ts.net:8000/"
     driver_path = "/opt/homebrew/bin/chromedriver"  # Update this path if different
-    num_instances = 15  # Number of Chrome instances to launch
-    duration = 10  # Duration in seconds
+    num_instances = 5  # Number of Chrome instances to launch
+    duration = 3  # Duration in seconds
     threads = []
 
     print(f"Preparing to launch Chrome: {num_instances} instances")
