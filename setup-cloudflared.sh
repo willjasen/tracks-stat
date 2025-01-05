@@ -71,10 +71,14 @@ fi
 #sed -i "s/^credentials-file: \/etc\/cloudflared\/.*\.json$/credentials-file: \/etc\/cloudflared\/${VAR1}.json/" /opt/tracks-stat/cloudflare-config.yml || error_exit "Failed to update credentials file path";
 
 # Reload systemd, enable and start the cloudflared service
-systemctl daemon-reload || error_exit "Failed to reload systemd daemon"
-systemctl enable cloudflared || error_exit "Failed to enable cloudflared service"
-systemctl start cloudflared || error_exit "Failed to start cloudflared service"
+#systemctl daemon-reload || error_exit "Failed to reload systemd daemon"
+#systemctl enable cloudflared || error_exit "Failed to enable cloudflared service"
+#systemctl start cloudflared || error_exit "Failed to start cloudflared service"
 
+systemctl stop cloudflared;
+rm /etc/systemd/system/cloudflared.service;
+systemctl daemon-reload;
+cloudflared service uninstall;
 cloudflared service install $VAR1;
 
 echo "Cloudflare Tunnel installation completed successfully"
