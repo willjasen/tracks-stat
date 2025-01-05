@@ -1,10 +1,8 @@
 #!/bin/sh
 
-# Install dependencies
-apt-get update;
-
 # Check if darkice is installed
 if ! which darkice > /dev/null 2>&1; then
+    apt-get update;
     apt-get install darkice -y;
 else
     echo "darkice is already installed";
@@ -12,6 +10,7 @@ fi
 
 # Check if icecast2 is installed
 if ! which icecast2 > /dev/null 2>&1; then
+    apt-get update;
     apt-get install icecast2 -y;
 else
     echo "icecast2 is already installed";
