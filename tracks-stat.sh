@@ -62,3 +62,6 @@ systemctl restart icecast2.service;
 
 # Install the Cloudflare Tunnel service
 . /opt/tracks-stat/setup-cloudflared.sh;
+
+# Say goodbye
+echo "tracks stat is ready!";
