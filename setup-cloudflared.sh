@@ -42,3 +42,5 @@ systemctl enable cloudflared || error_exit "Failed to enable cloudflared service
 systemctl start cloudflared || error_exit "Failed to start cloudflared service"
 
 echo "Cloudflare Tunnel installation completed successfully"
+
+sudo cloudflared service install $CLOUDFLARE_TUNNEL_ID;
