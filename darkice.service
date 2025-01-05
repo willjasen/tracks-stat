@@ -7,6 +7,7 @@ Type=simple
 ExecStart=/bin/bash /home/willjasen/darkice.sh
 Restart=on-failure
 RestartSec=20s
+User=willjasen
 
 [Install]
 WantedBy=multi-user.target
