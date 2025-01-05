@@ -60,18 +60,29 @@ fi
 systemctl restart darkice.service;
 systemctl restart icecast2.service;
 
-# Setup Cloudflare proxy
-. /opt/tracks-stat/setup-cloudflared.sh;
+# Check if cloudflared service is already installed
+if systemctl is-active --quiet cloudflared; then
+    echo "cloudflared service is already installed"
+else
+    echo "Installing Cloudflare Tunnel service"
+    # Setup Cloudflare proxy
+    . /opt/tracks-stat/setup-cloudflared.sh;
 
-# Configure cloudflared
-TUNNEL_ID=${VAR1};
-sed -i "s/<YOUR_TUNNEL_ID>/$TUNNEL_ID/g" /opt/tracks-stat/cloudflare-config.yml;
+    # Configure cloudflared
+    TUNNEL_ID=${VAR1};
+    sed -i "s/<YOUR_TUNNEL_ID>/$TUNNEL_ID/g" /opt/tracks-stat/cloudflare-config.yml;
 
-# Remove existing config.yml if it exists and create a symlink
-if [ -f /etc/cloudflared/config.yml ]; then
-    rm /etc/cloudflared/config.yml
+    # Remove existing config.yml if it exists and create a symlink
+    if [ -f /etc/cloudflared/config.yml ]; then
+        rm /etc/cloudflared/config.yml
+    fi
+    ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml
+
+    if [ $? -ne 0 ]; then
+        echo "Failed to install Cloudflare Tunnel service"
+        exit 1
+    fi
 fi
-ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml
 
 # Start cloudflared service
 systemctl restart cloudflared
