@@ -61,7 +61,7 @@ systemctl restart darkice.service;
 systemctl restart icecast2.service;
 
 # Setup Cloudflare proxy
-source /opt/tracks-stat/setup-cloudflared.sh;
+. /opt/tracks-stat/setup-cloudflared.sh;
 
 # Configure cloudflared
 TUNNEL_ID=${VAR1};
