@@ -3,9 +3,19 @@
 # Install dependencies
 apt-get update;
 
-# Install darkice and icecast2
-apt-get install darkice -y;
-apt-get install icecast2 -y;
+# Check if darkice is installed
+if ! which darkice > /dev/null 2>&1; then
+    apt-get install darkice -y;
+else
+    echo "darkice is already installed";
+fi
+
+# Check if icecast2 is installed
+if ! which icecast2 > /dev/null 2>&1; then
+    apt-get install icecast2 -y;
+else
+    echo "icecast2 is already installed";
+fi
 
 # configure the USB audio device
 configure_usb_audio_device () {
@@ -38,4 +48,3 @@ systemctl enable darkice.service;
 # Start icecast and darkice
 systemctl start icecast2.service;
 systemctl start darkice.service;
-
