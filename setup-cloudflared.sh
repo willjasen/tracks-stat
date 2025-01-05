@@ -59,8 +59,13 @@ fi
 # Verify VAR1 is set
 if [ -z "${VAR1}" ]; then
     error_exit "VAR1 is not set. Please set the tunnel ID variable.";
+else
+    # Debug tunnel ID configuration
+    echo "Current tunnel ID: ${VAR1}"
 fi
-sed -i "s/your_actual_tunnel_id/${VAR1}/" /opt/tracks-stat/cloudflare-config.yml;
+# Update config file with tunnel ID
+sed -i "s/^tunnel: .*$/tunnel: ${VAR1}/" /opt/tracks-stat/cloudflare-config.yml || error_exit "Failed to update tunnel ID";
+sed -i "s/^credentials-file: \/etc\/cloudflared\/.*\.json$/credentials-file: \/etc\/cloudflared\/${VAR1}.json/" /opt/tracks-stat/cloudflare-config.yml || error_exit "Failed to update credentials file path";
 
 # Reload systemd, enable and start the cloudflared service
 systemctl daemon-reload || error_exit "Failed to reload systemd daemon"
