@@ -22,7 +22,7 @@ else
     echo "cloudflared is already installed"
     echo "Uninstalling existing Cloudflare Tunnel service"
     if systemctl list-units --full -all | grep -Fq 'cloudflared-update.timer'; then
-        systemctl stop cloudflared-update.timer || error_exit "Failed to stop cloudflared-update.timer"
+        systemctl stop cloudflared-update.timer || echo "Failed to stop cloudflared-update.timer, but continuing"
     fi
     sudo cloudflared service uninstall || error_exit "Failed to uninstall existing Cloudflare Tunnel service"
 fi
