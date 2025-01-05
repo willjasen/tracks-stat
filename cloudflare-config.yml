@@ -1,5 +1,5 @@
-tunnel: <YOUR_TUNNEL_ID>
-credentials-file: /etc/cloudflared/<YOUR_TUNNEL_ID>.json
+tunnel: your_actual_tunnel_id
+credentials-file: /etc/cloudflared/your_actual_tunnel_id.json
 
 ingress:
   - hostname: stream.stretchie.delivery
