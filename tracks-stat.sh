@@ -26,7 +26,7 @@ error_exit() {
 configure_usb_audio_device () {
 
     # Get the device number of the USB audio device, needed for darkice
-    USB_AUDIO=$(arecord -l | grep 'card [0-9]\+: CODEC \[USB Audio CODEC\]' | awk '{print $5}' | tr -d ':');
+    USB_AUDIO=$(arecord -l | grep 'card [0-9]\+: CODEC \[USB Audio CODEC\]' | awk -F 'device ' '{print $2}' | awk '{print $1}');
 
     # Validate that USB_AUDIO is not empty
     if [ -z "$USB_AUDIO" ]; then
