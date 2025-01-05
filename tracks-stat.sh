@@ -62,4 +62,12 @@ systemctl restart icecast2.service;
 
 # Install the Cloudflare Tunnel service
 . /opt/tracks-stat/setup-cloudflared.sh;
-cloudflared service install ${VAR1} || error_exit "Failed to install Cloudflare Tunnel service";
+
+# Update tunnel ID in config
+sed -i "s/your_actual_tunnel_id/${VAR1}/" /opt/tracks-stat/cloudflare-config.yml;
+if [ -f /etc/cloudflared/config.yml ]; then
+    rm /etc/cloudflared/config.yml;
+fi
+ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml;
+systemctl restart cloudflared;
+# cloudflared service install ${VAR1} || error_exit "Failed to install Cloudflare Tunnel service";
