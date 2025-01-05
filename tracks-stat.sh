@@ -59,3 +59,6 @@ fi
 # Start darkice and icecast2
 systemctl restart darkice.service;
 systemctl restart icecast2.service;
+
+# Setup Cloudflare proxy
+bash /opt/tracks-stat/setup-cloudflared.sh;
