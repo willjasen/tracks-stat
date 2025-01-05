@@ -7,14 +7,22 @@ import time
 def get_cf_cache_status(driver):
     logs = driver.get_log('performance')
     for entry in logs:
-        log = json.loads(entry['message'])['message']
-        if log['method'] == 'Network.responseReceived':
-            response = log['params']['response']
-            headers = response.get('headers', {})
-            cf_cache_status = headers.get('CF-Cache-Status')
-            if cf_cache_status:
-                url = response.get('url')
-                print(f"URL: {url}\nCF-Cache-Status: {cf_cache_status}\n")
+        try:
+            log = json.loads(entry['message'])['message']
+            if log['method'] == 'Network.responseReceived':
+                response = log['params']['response']
+                headers = response.get('headers', {})
+                # Use case-insensitive header lookup
+                cf_cache_status = headers.get('cf-cache-status') or headers.get('CF-Cache-Status')
+                if cf_cache_status:
+                    url = response.get('url')
+                    print(f"URL: {url}\nCF-Cache-Status: {cf_cache_status}\n")
+                else:
+                    nothingvar = "null"
+            else:
+                nothingvar2 = "nothing"
+        except Exception as e:
+            print(f"Error parsing log entry: {e}")
 
 def launch_chrome_stream_with_logging(stream_url, duration, driver_path):
     # Configure Chrome options
@@ -26,9 +34,6 @@ def launch_chrome_stream_with_logging(stream_url, duration, driver_path):
     chrome_options.add_argument("--headless")
     
     # Enable performance logging
-    perf_log_prefs = {
-        'enableNetwork': True,
-    }
     chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
     
     # Initialize the WebDriver
@@ -38,7 +43,7 @@ def launch_chrome_stream_with_logging(stream_url, duration, driver_path):
     try:
         # Navigate to the stream URL
         driver.get(stream_url)
-        print(f"Started streaming in Chrome instance PID: {driver.service.process.pid}")
+        print(f"Started streaming in Chrome instance PID: {driver.service.process.pid}\n")
         
         # Wait for a short period to allow network events to be captured
         time.sleep(5)  # Adjust based on your needs
@@ -60,7 +65,7 @@ def launch_chrome_stream_with_logging(stream_url, duration, driver_path):
 
 def main():
     stream_url = "https://stream.stretchie.delivery/"
-    duration = 5  # Duration in seconds (1 minute)
+    duration = 1  # Duration in seconds
     driver_path = "/opt/homebrew/bin/chromedriver"  # Update this path if different
     
     num_instances = 1  # Number of Chrome instances to launch
@@ -73,4 +78,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
