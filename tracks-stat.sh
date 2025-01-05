@@ -39,7 +39,7 @@ configure_usb_audio_device () {
         error_exit "USB_AUDIO variable ('$USB_AUDIO') is not a valid number.";
     fi
 
-    sed -i.bak "s/\(plughw:CODEC,\)[0-9]\+/\1$USB_AUDIO/" darkice.cfg;
+    sed -i.bak "s/\(plughw:CODEC,\)[0-9]\+/\1$USB_AUDIO/" /home/wiljasen/darkice.cfg;
 
 };
 
