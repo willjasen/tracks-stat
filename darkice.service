@@ -7,7 +7,7 @@ Type=simple
 ExecStart=/usr/bin/darkice -c /opt/tracks-stat/darkice.cfg
 Restart=on-failure
 RestartSec=20s
-User=willjasen
+User=root
 
 [Install]
 WantedBy=multi-user.target
