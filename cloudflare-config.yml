@@ -1,4 +1,4 @@
 ingress:
   - hostname: stream.stretchie.delivery
     service: http://localhost:8000
-  - service: http_status:404
+  - service: http_status:403
