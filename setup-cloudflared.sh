@@ -46,6 +46,9 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
+ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml;
+sed -i "s/your_actual_tunnel_id/${VAR1}/" /opt/tracks-stat/cloudflare-config.yml;
+
 # Reload systemd, enable and start the cloudflared service
 systemctl daemon-reload || error_exit "Failed to reload systemd daemon"
 systemctl enable cloudflared || error_exit "Failed to enable cloudflared service"
