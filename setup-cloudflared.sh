@@ -75,7 +75,7 @@ fi
 #systemctl enable cloudflared || error_exit "Failed to enable cloudflared service"
 #systemctl start cloudflared || error_exit "Failed to start cloudflared service"
 
-systemctl stop cloudflared;
+#systemctl stop cloudflared;
 rm /etc/systemd/system/cloudflared.service;
 systemctl daemon-reload;
 cloudflared service uninstall;
