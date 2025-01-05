@@ -1,7 +1,5 @@
 #!/bin/sh
 
-CLOUDFLARE_TUNNEL_ID=${VAR1};
-
 # Check if darkice is installed
 if ! which darkice > /dev/null 2>&1; then
     apt-get update;
@@ -63,7 +61,17 @@ systemctl restart darkice.service;
 systemctl restart icecast2.service;
 
 # Setup Cloudflare proxy
-bash /opt/tracks-stat/setup-cloudflared.sh;
-ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml;
-sed -i "s/<YOUR_TUNNEL_ID>/$CLOUDFLARE_TUNNEL_ID/g" /etc/cloudflared/config.yml;
-systemctl restart cloudflared;
+bash /opt/tracks-stat/setup-cloudflared.sh
+
+# Configure cloudflared
+TUNNEL_ID="your_actual_tunnel_id"
+sed -i "s/<YOUR_TUNNEL_ID>/$TUNNEL_ID/g" /opt/tracks-stat/cloudflare-config.yml
+
+# Remove existing config.yml if it exists and create a symlink
+if [ -f /etc/cloudflared/config.yml ]; then
+    rm /etc/cloudflared/config.yml
+fi
+ln -s /opt/tracks-stat/cloudflare-config.yml /etc/cloudflared/config.yml
+
+# Start cloudflared service
+systemctl restart cloudflared
