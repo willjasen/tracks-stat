@@ -64,13 +64,15 @@ else
     echo "Current tunnel ID: ${VAR1}"
 fi
 # Update config file with tunnel ID
-sed -i "s/^tunnel: .*$/tunnel: ${VAR1}/" /opt/tracks-stat/cloudflare-config.yml || error_exit "Failed to update tunnel ID";
-sed -i "s/^credentials-file: \/etc\/cloudflared\/.*\.json$/credentials-file: \/etc\/cloudflared\/${VAR1}.json/" /opt/tracks-stat/cloudflare-config.yml || error_exit "Failed to update credentials file path";
+#sed -i "s/^tunnel: .*$/tunnel: ${VAR1}/" /opt/tracks-stat/cloudflare-config.yml || error_exit "Failed to update tunnel ID";
+#sed -i "s/^credentials-file: \/etc\/cloudflared\/.*\.json$/credentials-file: \/etc\/cloudflared\/${VAR1}.json/" /opt/tracks-stat/cloudflare-config.yml || error_exit "Failed to update credentials file path";
 
 # Reload systemd, enable and start the cloudflared service
 systemctl daemon-reload || error_exit "Failed to reload systemd daemon"
 systemctl enable cloudflared || error_exit "Failed to enable cloudflared service"
 systemctl start cloudflared || error_exit "Failed to start cloudflared service"
+
+cloudflared service install $VAR1;
 
 echo "Cloudflare Tunnel installation completed successfully"
 

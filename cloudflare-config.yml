@@ -1,6 +1,3 @@
-tunnel: your_actual_tunnel_id
-credentials-file: /etc/cloudflared/your_actual_tunnel_id.json
-
 ingress:
   - hostname: stream.stretchie.delivery
     service: http://localhost:8000
