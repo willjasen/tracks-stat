@@ -17,6 +17,12 @@ else
     echo "icecast2 is already installed";
 fi
 
+# Define error_exit function
+error_exit() {
+    echo "$1" 1>&2
+    exit 1
+}
+
 # configure the USB audio device
 configure_usb_audio_device () {
 
@@ -24,12 +30,12 @@ configure_usb_audio_device () {
     USB_AUDIO=$(arecord -l | grep 'card [0-9]\+: CODEC \[USB Audio CODEC\]' | awk '{print $2}' | tr -d ':');
 
     # Validate that USB_AUDIO is not empty
-    if [[ -z "$USB_AUDIO" ]]; then
+    if [ -z "$USB_AUDIO" ]; then
         error_exit "USB_AUDIO variable is empty. Ensure that the USB Audio CODEC is connected and recognized.";
     fi
 
     # Validate that USB_AUDIO contains only digits
-    if ! [[ "$USB_AUDIO" =~ ^[0-9]+$ ]]; then
+    if ! echo "$USB_AUDIO" | grep -qE '^[0-9]+$'; then
         error_exit "USB_AUDIO variable ('$USB_AUDIO') is not a valid number.";
     fi
 
