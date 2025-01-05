@@ -64,7 +64,7 @@ systemctl restart icecast2.service;
 bash /opt/tracks-stat/setup-cloudflared.sh
 
 # Configure cloudflared
-TUNNEL_ID="your_actual_tunnel_id"
+TUNNEL_ID=${VAR1}
 sed -i "s/<YOUR_TUNNEL_ID>/$TUNNEL_ID/g" /opt/tracks-stat/cloudflare-config.yml
 
 # Remove existing config.yml if it exists and create a symlink
