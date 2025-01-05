@@ -48,6 +48,7 @@ configure_usb_audio_device;
 # Make darkice a service
 cp darkice.service /etc/systemd/system/darkice.service;
 systemctl daemon-reload;
+systemctl disable darkice.service;
 systemctl enable darkice.service;
 
 # Start darkice and icecast2
