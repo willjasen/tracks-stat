@@ -20,11 +20,11 @@ if ! which cloudflared > /dev/null 2>&1; then
     cloudflared --version || error_exit "Failed to verify cloudflared installation"
 else
     echo "cloudflared is already installed"
-    echo "Uninstalling existing Cloudflare Tunnel service"
+    #echo "Uninstalling existing Cloudflare Tunnel service"
     #if systemctl list-units --full -all | grep -Fq 'cloudflared-update.timer'; then
     #    systemctl stop cloudflared-update.timer || echo "Failed to stop cloudflared-update.timer, but continuing"
     #fi
-    cloudflared service uninstall || error_exit "Failed to uninstall existing Cloudflare Tunnel service"
+    #cloudflared service uninstall || error_exit "Failed to uninstall existing Cloudflare Tunnel service"
 fi
 
 # Create a configuration directory for cloudflared
