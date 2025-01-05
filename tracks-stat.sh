@@ -60,6 +60,13 @@ fi
 systemctl restart darkice.service;
 systemctl restart icecast2.service;
 
-. /opt/tracks-stat/setup-cloudflared.sh;
+# Check if cloudflared service is already installed
+if systemctl is-active --quiet cloudflared; then
+    echo "cloudflared service is already installed"
+    echo "Uninstalling existing Cloudflare Tunnel service"
+    sudo cloudflared service uninstall || error_exit "Failed to uninstall existing Cloudflare Tunnel service"
+fi
+
 # Install the Cloudflare Tunnel service
+. /opt/tracks-stat/setup-cloudflared.sh;
 sudo cloudflared service install $CLOUDFLARE_TUNNEL_ID || error_exit "Failed to install Cloudflare Tunnel service";
