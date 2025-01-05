@@ -20,16 +20,11 @@ if ! which cloudflared > /dev/null 2>&1; then
     cloudflared --version || error_exit "Failed to verify cloudflared installation"
 else
     echo "cloudflared is already installed"
-    # Clear the cloudflard service
-    systemctl stop cloudflared;
-    rm /etc/systemd/system/cloudflared.service;
-    systemctl daemon-reload;
-    cloudflared service uninstall;
     echo "Uninstalling existing Cloudflare Tunnel service"
-    if systemctl list-units --full -all | grep -Fq 'cloudflared-update.timer'; then
-        systemctl stop cloudflared-update.timer || echo "Failed to stop cloudflared-update.timer, but continuing"
-    fi
-    sudo cloudflared service uninstall || error_exit "Failed to uninstall existing Cloudflare Tunnel service"
+    #if systemctl list-units --full -all | grep -Fq 'cloudflared-update.timer'; then
+    #    systemctl stop cloudflared-update.timer || echo "Failed to stop cloudflared-update.timer, but continuing"
+    #fi
+    cloudflared service uninstall || error_exit "Failed to uninstall existing Cloudflare Tunnel service"
 fi
 
 # Create a configuration directory for cloudflared
@@ -61,3 +56,9 @@ systemctl enable cloudflared || error_exit "Failed to enable cloudflared service
 systemctl start cloudflared || error_exit "Failed to start cloudflared service"
 
 echo "Cloudflare Tunnel installation completed successfully"
+
+# Clear the cloudflard service
+    #systemctl stop cloudflared;
+    #rm /etc/systemd/system/cloudflared.service;
+    #systemctl daemon-reload;
+    #cloudflared service uninstall;
