@@ -20,14 +20,13 @@ fi
 error_exit() {
     echo "$1" 1>&2
     exit 1
-};
+}
 
 # configure the USB audio device
 configure_usb_audio_device () {
 
     # Get the card number of the USB audio device, needed for darkice
     USB_AUDIO=$(arecord -l | grep 'device [0-9]\+: USB Audio \[USB Audio\]' | awk '{print $2}' | tr -d ':');
-    # USB_AUDIO=$(arecord -l | grep 'card [0-9]\+: CODEC \[USB Audio CODEC\]' | awk '{print $2}' | tr -d ':');
 
     # Validate that USB_AUDIO is not empty
     if [ -z "$USB_AUDIO" ]; then
@@ -39,7 +38,8 @@ configure_usb_audio_device () {
         error_exit "USB_AUDIO variable ('$USB_AUDIO') is not a valid number.";
     fi
 
-    sed -i.bak "s/\(plughw:CODEC,\)[0-9]\+/\1$USB_AUDIO/" /opt/tracks-stat/darkice.cfg;
+    # Update darkice.cfg with the correct device identifier
+    sed -i.bak "s/device\s*=\s*plughw:CODEC,[0-9]\+/device = plughw:CODEC,$USB_AUDIO/" /opt/tracks-stat/darkice.cfg;
 
 };
 
@@ -48,8 +48,13 @@ configure_usb_audio_device;
 # Make darkice a service
 cp darkice.service /etc/systemd/system/darkice.service;
 systemctl daemon-reload;
-systemctl disable darkice.service;
-systemctl enable darkice.service;
+
+# Check if darkice service is enabled
+if ! systemctl is-enabled darkice.service > /dev/null 2>&1; then
+    systemctl enable darkice.service;
+else
+    echo "darkice service is already enabled";
+fi
 
 # Start darkice and icecast2
 systemctl restart darkice.service;
