@@ -51,6 +51,6 @@ cp darkice.service /etc/systemd/system/darkice.service;
 systemctl daemon-reload;
 systemctl enable darkice.service;
 
-# Start icecast and darkice
-systemctl start icecast2.service;
+# Start darkice and icecast2
 systemctl start darkice.service;
+systemctl start icecast2.service;
