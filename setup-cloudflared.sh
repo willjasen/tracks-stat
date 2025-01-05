@@ -6,16 +6,21 @@ error_exit() {
     exit 1
 }
 
-# Update package list and install dependencies
-apt-get update || error_exit "Failed to update package list"
-apt-get install -y curl || error_exit "Failed to install curl"
+# Check if cloudflared is installed
+if ! which cloudflared > /dev/null 2>&1; then
+    # Update package list and install dependencies
+    apt-get update || error_exit "Failed to update package list"
+    apt-get install -y curl || error_exit "Failed to install curl"
 
-# Download and install the Cloudflare Tunnel package
-curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm -o /usr/local/bin/cloudflared || error_exit "Failed to download cloudflared"
-chmod +x /usr/local/bin/cloudflared || error_exit "Failed to make cloudflared executable"
+    # Download and install the Cloudflare Tunnel package
+    curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm -o /usr/local/bin/cloudflared || error_exit "Failed to download cloudflared"
+    chmod +x /usr/local/bin/cloudflared || error_exit "Failed to make cloudflared executable"
 
-# Verify the installation
-cloudflared --version || error_exit "Failed to verify cloudflared installation"
+    # Verify the installation
+    cloudflared --version || error_exit "Failed to verify cloudflared installation"
+else
+    echo "cloudflared is already installed";
+fi
 
 # Create a configuration directory for cloudflared
 mkdir -p /etc/cloudflared || error_exit "Failed to create cloudflared configuration directory"
@@ -43,4 +48,5 @@ systemctl start cloudflared || error_exit "Failed to start cloudflared service"
 
 echo "Cloudflare Tunnel installation completed successfully"
 
-sudo cloudflared service install $CLOUDFLARE_TUNNEL_ID;
+# Install the Cloudflare Tunnel service
+sudo cloudflared service install $CLOUDFLARE_TUNNEL_ID || error_exit "Failed to install Cloudflare Tunnel service"
