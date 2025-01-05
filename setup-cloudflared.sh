@@ -30,21 +30,7 @@ fi
 # Create a configuration directory for cloudflared
 mkdir -p /etc/cloudflared || error_exit "Failed to create cloudflared configuration directory"
 
-# Create a systemd service file for cloudflared
-cat <<EOF > /etc/systemd/system/cloudflared.service
-[Unit]
-Description=Cloudflare Tunnel
-After=network.target
 
-[Service]
-Type=simple
-User=nobody
-ExecStart=/usr/local/bin/cloudflared tunnel run
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-EOF
 
 
 # Check if config.yml symlink already points to our config
@@ -77,6 +63,21 @@ fi
 
 #systemctl stop cloudflared;
 rm /etc/systemd/system/cloudflared.service;
+# Create a systemd service file for cloudflared
+cat <<EOF > /etc/systemd/system/cloudflared.service
+[Unit]
+Description=Cloudflare Tunnel
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+ExecStart=/usr/local/bin/cloudflared tunnel run
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
 systemctl daemon-reload;
 cloudflared service uninstall;
 cloudflared service install $VAR1;
